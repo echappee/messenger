@@ -15,21 +15,25 @@ const ENDPOINT = 'http://localhost:8080/';
 
 let socket;
 
+// location is a prop from react router
 const Chat = ({ location }) => {
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
-  const [users, setUsers] = useState('');
+  const [users, setUsers] = useState([]);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     const { room } = queryString.parse(location.search);
     const name = AuthService.getCurrentUser().username;
+    console.log(name)
 
     socket = io();
+    // socket = io(ENDPOINT) ?; 
 
-    setRoom(room);
-    setName(name)
+    // setRoom(room);
+    // setName(name)
+    console.log(socket);
 
     socket.emit('join', { name, room }, (error) => {
       if (error) {
@@ -43,9 +47,16 @@ const Chat = ({ location }) => {
       setMessages(messages => [...messages, message]);
     });
 
-    socket.on("roomData", ({ users }) => {
-      setUsers(users);
+    // socket.on("roomData", ({ users }) => {
+    //   setUsers(users);
+      // console.log(users)
+    // });
+
+    socket.on("users", ({users}) => {
+      console.log(users)
+      setUsers(users)
     });
+    
   }, []);
 
   const sendMessage = (event) => {
@@ -56,8 +67,20 @@ const Chat = ({ location }) => {
     }
   }
 
+  function UsersList(users) {
+    const listItems = users.map((user) =>
+      <li key={user.toString()}>
+        {user.name}
+      </li>
+    );
+    return (
+      <ul>{listItems}</ul>
+    );
+  }
+
   return (
     <div className="outerContainer">
+      {UsersList(users)}
       <div className="container">
         <InfoBar room={room} />
         <Messages messages={messages} name={name} />

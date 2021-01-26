@@ -1,7 +1,7 @@
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-const { addUser, removeUser, getUser, getUsersInRoom } = require('./users');
+const { addUser, removeUser, getUser, getUsersInRoom, getUsers } = require('./users');
 
 
 // socket io
@@ -58,7 +58,8 @@ app.get("/", (req, res) => {
 io.on('connection', (socket) => {
     socket.on('join', ({ name, room }, callback) => {
         const defaultRoom = 'general';
-        const { error, user } = addUser({ id: socket.id, name, room: defaultRoom });
+     
+        const { error, user } = addUser({ id: socket.id, name, room:defaultRoom });
 
         if (error) return callback(error);
 
@@ -67,7 +68,13 @@ io.on('connection', (socket) => {
         socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}.` });
         socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
-        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+        // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+        
+        //emit users
+        socket.emit('users', {users: getUsers() });
+
+        // update the list of users for everyone
+        socket.broadcast.to(user.room).emit('users', { users: getUsers() });
 
         callback();
     });
