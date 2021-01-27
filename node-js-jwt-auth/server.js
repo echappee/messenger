@@ -3,7 +3,6 @@ const cors = require("cors");
 
 const { addUser, removeUser, getUser, getUsersInRoom, getUsers } = require('./users');
 
-
 // socket io
 const app = require('express')();
 const http = require('http').Server(app);
@@ -24,29 +23,30 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./app/models");
+const Message = db.message
+// console.log(Message)
 const Role = db.role;
 
-db.sequelize.sync({ alter: true }).then(() => {
-    console.log('Drop and Resync Db');
-    initial();
+db.sequelize.sync({}).then(() => {
+    // initial();
 });
 
-function initial() {
-    Role.create({
-        id: 1,
-        name: "user"
-    });
+// function initial() {
+//     Role.create({
+//         id: 1,
+//         name: "user"
+//     });
 
-    Role.create({
-        id: 2,
-        name: "moderator"
-    });
+//     Role.create({
+//         id: 2,
+//         name: "moderator"
+//     });
 
-    Role.create({
-        id: 3,
-        name: "admin"
-    });
-}
+//     Role.create({
+//         id: 3,
+//         name: "admin"
+//     });
+// }
 
 // simple route
 app.get("/", (req, res) => {
@@ -58,8 +58,8 @@ app.get("/", (req, res) => {
 io.on('connection', (socket) => {
     socket.on('join', ({ name, room }, callback) => {
         const defaultRoom = 'general';
-     
-        const { error, user } = addUser({ id: socket.id, name, room:defaultRoom });
+
+        const { error, user } = addUser({ id: socket.id, name, room: defaultRoom });
 
         if (error) return callback(error);
 
@@ -69,9 +69,9 @@ io.on('connection', (socket) => {
         socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
         // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
-        
+
         //emit users
-        socket.emit('users', {users: getUsers() });
+        socket.emit('users', { users: getUsers() });
 
         // update the list of users for everyone
         socket.broadcast.to(user.room).emit('users', { users: getUsers() });
@@ -83,7 +83,11 @@ io.on('connection', (socket) => {
         const user = getUser(socket.id);
 
         io.to(user.room).emit('message', { user: user.name, text: message });
-
+        // console.log(Message)
+        Message.create({
+            userId: user.id,
+            content: message
+        })
         callback();
     });
 
@@ -93,6 +97,7 @@ io.on('connection', (socket) => {
         if (user) {
             io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
             io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+            socket.broadcast.to(user.room).emit('users', { users: getUsers() });
         }
     })
 });

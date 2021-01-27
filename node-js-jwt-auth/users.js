@@ -6,7 +6,7 @@ const addUser = ({ id, name, room }) => {
   name = name.trim().toLowerCase(); //Laure Malherbe => lauremalherbe
   room = room.trim().toLowerCase();
 
-  //check if there is already an existing 
+  //check if there is already an existing user
   const existingUser = users.find((user) => user.room === room && user.name === name);
 
   if (!name || !room) return { error: 'Username and room are required.' };
@@ -14,9 +14,7 @@ const addUser = ({ id, name, room }) => {
 
   // object user 
   const user = { id, name, room };
-
   users.push(user);
-
   return { user };
 }
 // find a user with a specific id
@@ -25,7 +23,7 @@ const removeUser = (id) => {
 
   if (index !== -1) return users.splice(index, 1)[0];
 }
-// to get a User in a specific room
+// to get a user with his id
 const getUser = (id) => users.find((user) => user.id === id);
 
 // to get all the users in the room, use the filter function 

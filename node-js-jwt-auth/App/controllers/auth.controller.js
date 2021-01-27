@@ -2,11 +2,20 @@ const db = require("../models");
 const config = require("../config/auth.config");
 const User = db.user;
 const Role = db.role;
+// const Message = db.message;
+
 
 const Op = db.Sequelize.Op;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+
+// exports.message = (req, res)=> {
+//   Message.create({
+//     user_id: req.body.user_id,
+//     Message: req.body.message
+//   })
+// }
 
 exports.signup = (req, res) => {
   // Save User to Database
@@ -38,6 +47,7 @@ exports.signup = (req, res) => {
     .catch(err => {
       res.status(500).send({ message: err.message });
     });
+    
 };
 
 exports.signin = (req, res) => {
