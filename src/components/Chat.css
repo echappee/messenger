@@ -17,9 +17,11 @@
   }
 
   li {
-    color: white
+    color: white;
+    text-decoration: white;
+    text-decoration-line: underline;
   }
-  
+
   @media (min-width: 320px) and (max-width: 480px) {
     .outerContainer {
       height: 100%;
@@ -36,3 +38,4 @@
       width: 60%;
     }
   }
+  

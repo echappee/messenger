@@ -9,15 +9,13 @@ import AuthService from "./services/auth.service";
 import Login from "./components/login.component";
 import Register from "./components/register.component";
 import Home from "./components/home.component";
-import Profile from "./components/profile.component";
+// import Profile from "./components/profile.component";
 import BoardUser from "./components/board-user.component";
 // import BoardModerator from "./components/board-moderator.component";
 // import BoardAdmin from "./components/board-admin.component";
 import Chat from "./components/Chat";
 import Rooms from "./components/Rooms";
-import Room from "./components/Room";
-
-
+// import Room from "./components/Room";
 
 class App extends Component {
   constructor(props) {
@@ -128,7 +126,6 @@ class App extends Component {
               <Route path="/user" component={BoardUser} />
               <Route path="/chat" component={Chat} />
               <Route path="/rooms" component={Rooms} />
-
 
               {/* <Route path="/mod" component={BoardModerator} /> */}
               {/* <Route path="/admin" component={BoardAdmin} /> */}

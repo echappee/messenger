@@ -1,5 +1,6 @@
 const config = require("../config/db.config.js");
 const Sequelize = require("sequelize");
+// Crée une instance sequelize partagée par les différents models
 const sequelize = new Sequelize(
   config.DB,
   config.USER,
@@ -8,7 +9,7 @@ const sequelize = new Sequelize(
     logging:false,
     host: config.HOST,
     dialect: config.dialect,
-    operatorsAliases: false,
+    operatorsAliases: 0,
 
     pool: {
       max: config.pool.max,
@@ -24,6 +25,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+//Partage de l'objet sequelize avec chaque model
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
 db.message = require("./message.model.js")(sequelize, Sequelize);

@@ -10,6 +10,7 @@ import Input from './Input';
 // import TextContainer from './TextContainer';
 
 import './Chat.css';
+import { Link } from "react-router-dom";
 
 const ENDPOINT = 'http://localhost:8080/';
 
@@ -26,14 +27,13 @@ const Chat = ({ location }) => {
   useEffect(() => {
     const { room } = queryString.parse(location.search);
     const name = AuthService.getCurrentUser().username;
-    console.log(name)
+    // console.log(name)
 
     socket = io();
     // socket = io(ENDPOINT) ?; 
-
     // setRoom(room);
     // setName(name)
-    console.log(socket);
+    // console.log(socket);
 
     socket.emit('join', { name, room }, (error) => {
       if (error) {
@@ -49,19 +49,22 @@ const Chat = ({ location }) => {
 
     // socket.on("roomData", ({ users }) => {
     //   setUsers(users);
-      // console.log(users)
+    // console.log(users)
     // });
 
-    socket.on("users", ({users}) => {
-      console.log(users)
+    socket.on("users", ({ users }) => {
+      // console.log(users)
       setUsers(users)
     });
-    
+
+    socket.on('messages', messages => {
+      console.log(messages)
+      setMessages(m => messages)
+    });
   }, []);
 
   const sendMessage = (event) => {
     event.preventDefault();
-
     if (message) {
       socket.emit('sendMessage', message, () => setMessage(''));
     }
@@ -69,7 +72,7 @@ const Chat = ({ location }) => {
 
   function UsersList(users) {
     const listItems = users.map((user) =>
-      <li key={user.toString()}>
+      <li key={user.id}>
         {user.name}
       </li>
     );
@@ -80,7 +83,9 @@ const Chat = ({ location }) => {
 
   return (
     <div className="outerContainer">
-      {UsersList(users)}
+      <Link className="link" to="/rooms">
+        {UsersList(users)}
+      </Link>
       <div className="container">
         <InfoBar room={room} />
         <Messages messages={messages} name={name} />
