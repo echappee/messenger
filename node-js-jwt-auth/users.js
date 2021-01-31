@@ -15,6 +15,8 @@ const addUser = ({ id, name, room }) => {
   // object user 
   const user = { id, name, room };
   users.push(user);
+  console.log("Add user; users :")
+  console.log(users)
   return { user };
 }
 // find a user with a specific id

@@ -7,8 +7,6 @@ import AuthService from "../services/auth.service";
 import Messages from './Messages';
 import InfoBar from './InfoBar';
 import Input from './Input';
-// import TextContainer from './TextContainer';
-
 import './Chat.css';
 import { Link } from "react-router-dom";
 
@@ -27,13 +25,13 @@ const Chat = ({ location }) => {
   useEffect(() => {
     const { room } = queryString.parse(location.search);
     const name = AuthService.getCurrentUser().username;
-    // console.log(name)
+    console.log(room)
 
     socket = io();
-    // socket = io(ENDPOINT) ?; 
-    // setRoom(room);
-    // setName(name)
-    // console.log(socket);
+    // socket = io(ENDPOINT); 
+    setRoom(room);
+    setName(name)
+    console.log(socket);
 
     socket.emit('join', { name, room }, (error) => {
       if (error) {
@@ -61,6 +59,11 @@ const Chat = ({ location }) => {
       console.log(messages)
       setMessages(m => messages)
     });
+
+    socket.on('room', room => {
+      console.log(room)
+      setRoom(m => room)
+    });
   }, []);
 
   const sendMessage = (event) => {
@@ -73,25 +76,39 @@ const Chat = ({ location }) => {
   function UsersList(users) {
     const listItems = users.map((user) =>
       <li key={user.id}>
-        {user.name}
+        <Link className="link" to="/rooms">
+          {user.name}
+        </Link>
       </li>
     );
     return (
-      <ul>{listItems}</ul>
+      <ul>{listItems}
+
+        <li>
+          <Link className="link" to="/chat?room=klack">
+            klack
+          </Link>
+        </li>
+
+        <li>
+          <Link className="link" to="/chat?room=klack2">
+            klack2
+          </Link>
+        </li>
+      </ul>
+
     );
   }
 
   return (
     <div className="outerContainer">
-      <Link className="link" to="/rooms">
-        {UsersList(users)}
-      </Link>
+      {UsersList(users)}
+
       <div className="container">
         <InfoBar room={room} />
         <Messages messages={messages} name={name} />
         <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
       </div>
-      {/* <TextContainer users={users}/> */}
     </div>
   );
 }

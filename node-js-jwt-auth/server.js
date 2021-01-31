@@ -59,9 +59,11 @@ app.get("/", (req, res) => {
 // Run when client connects
 io.on('connection', (socket) => {
     socket.on('join', ({ name, room }, callback) => {
-        const defaultRoom = 'general';
+        // const defaultRoom = 'general';
+        console.log(name)
+        console.log(room)
 
-        const { error, user } = addUser({ id: socket.id, name, room: defaultRoom });
+        const { error, user } = addUser({ id: socket.id, name, room});
 
         if (error) return callback(error);
 
@@ -69,13 +71,14 @@ io.on('connection', (socket) => {
         //emit message to a single user
         socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}.` });
         //emit to everyone
-        // socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
+        socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
         // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
         //emit users
         socket.emit('users', { users: getUsers() });
-        
+
+        socket.broadcast.to(user.room).emit('rooms', {room});
 
         // update the list of users for everyone
         socket.broadcast.to(user.room).emit('users', { users: getUsers() });
@@ -83,17 +86,17 @@ io.on('connection', (socket) => {
         //historique de la conversation avec la methode findAll pour récupérer tous les messages
         Message.findAll().then((messages) => {
         socket.emit('messages', messages);
-        console.log(messages);
+        // console.log(messages);
         });
 
         callback();
     });
 
     socket.on('sendMessage', (message, callback) => {
-            const user = getUser(socket.id);
-
+        const user = getUser(socket.id);
+        console.log(user)
         io.to(user.room).emit('message', { user: user.name, text: message });
-        console.log(user.name)
+        
         Message.create({
             username: user.name,
             text: message

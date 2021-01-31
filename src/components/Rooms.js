@@ -1,24 +1,37 @@
-import React, { Component } from "react";
-import Room from "./Room";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-export default class Rooms extends Component {
-    constructor(props) {
-        super(props);
-    }
+const Rooms = ({ }) => {
+    // const [rooms, setRoom] = useState('');
 
-    render() {
+    // const listItems = [];
 
-        let list = <div className="no-content-message">There is no rooms to show</div>;
-        if (this.props.rooms && this.props.rooms.map) {
-            list = this.props.rooms.map(r => <Room key={r.id}
-                id={r.id} name={r.name}
-                participants={r.participants}
-                onClick={this.handleClick} />);
-        }
-        return (
-            <div className='room-list'>
-                {list}
-            </div>
-        );
-    }
+    // function RoomsList(rooms) {
+    //     const listItems = rooms.map((room) =>
+    //       <li key={room.id}>
+    //         <Link className="link" to="/room">
+    //           {room.name}
+    //         </Link>
+    //       </li>
+    //     );
+    return (
+
+        <ul>
+            <li>
+                <Link className="link" to="/chat?room=klack">
+                    klack
+              </Link>
+            </li>
+
+            <li>
+                <Link className="link" to="/chat?room=klack2">
+                    klack2
+              </Link>
+            </li>
+        </ul>
+
+    );
+    //   }
 }
+
+export default Rooms;
