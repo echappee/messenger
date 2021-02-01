@@ -31,8 +31,8 @@ const Chat = ({ location }) => {
 
     socket = io();
     // socket = io(ENDPOINT) ?; 
-    // setRoom(room);
-    // setName(name)
+    setRoom(room);
+    setName(name)
     // console.log(socket);
 
     socket.emit('join', { name, room }, (error) => {
@@ -58,7 +58,7 @@ const Chat = ({ location }) => {
     });
 
     socket.on('messages', messages => {
-      console.log(messages)
+      // console.log(messages)
       setMessages(m => messages)
     });
   }, []);

@@ -28,12 +28,12 @@ const Message = db.message
 // console.log(Message)
 const Role = db.role;
 
-db.sequelize.sync({alter:true}).then(() => {
+db.sequelize.sync({ alter: true }).then(() => {
     initial();
 });
 
 function initial() {
-   //upsert=update/insert
+    //upsert=update/insert
     Role.upsert({
         id: 1,
         name: "user"
@@ -54,6 +54,8 @@ function initial() {
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to messenger application." });
 });
+
+const User = db.user
 //------------------------------
 //Websocket
 // Run when client connects
@@ -61,39 +63,47 @@ io.on('connection', (socket) => {
     socket.on('join', ({ name, room }, callback) => {
         const defaultRoom = 'general';
 
-        const { error, user } = addUser({ id: socket.id, name, room: defaultRoom });
+        //Recuperer l'id de l utilisateur dans la BDD
+        User.findOne({
+            where: {
+                username: name
+            }
+        }).then(({ id }) => {
+            const { error, user } = addUser({ id, name, room: defaultRoom });
 
-        if (error) return callback(error);
+            if (error) return callback(error);
 
-        socket.join(user.room);
-        //emit message to a single user
-        socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}.` });
-        //emit to everyone
-        // socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
-        // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+            socket.join(user.room);
+            //emit message to a single user
+            socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}.` });
+            //emit to everyone
+            socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
 
-        //emit users
-        socket.emit('users', { users: getUsers() });
-        
+            // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
-        // update the list of users for everyone
-        socket.broadcast.to(user.room).emit('users', { users: getUsers() });
+            //emit users
+            socket.emit('users', { users: getUsers() });
 
-        //historique de la conversation avec la methode findAll pour récupérer tous les messages
-        Message.findAll().then((messages) => {
-        socket.emit('messages', messages);
-        console.log(messages);
-        });
 
-        callback();
+            // update the list of users for everyone
+            socket.broadcast.to(user.room).emit('users', { users: getUsers() });
+
+            //historique de la conversation avec la methode findAll pour récupérer tous les messages
+            Message.findAll().then((messages) => {
+                socket.emit('messages', messages);
+                // console.log(messages);
+            });
+
+            callback();
+        })
     });
 
     socket.on('sendMessage', (message, callback) => {
-            const user = getUser(socket.id);
+        const user = getUser(socket.id);
 
         io.to(user.room).emit('message', { user: user.name, text: message });
-        console.log(user.name)
+        // console.log(user.name)
         Message.create({
             username: user.name,
             text: message
