@@ -28,10 +28,10 @@ const Chat = ({ location }) => {
     console.log(room)
 
     socket = io();
-    // socket = io(ENDPOINT); 
+    // socket = io(ENDPOINT) ?; 
     setRoom(room);
     setName(name)
-    console.log(socket);
+    // console.log(socket);
 
     socket.emit('join', { name, room }, (error) => {
       if (error) {
@@ -56,12 +56,12 @@ const Chat = ({ location }) => {
     });
 
     socket.on('messages', messages => {
-      console.log(messages)
+      // console.log(messages)
       setMessages(m => messages)
     });
 
     socket.on('room', room => {
-      console.log(room)
+      // console.log(room)
       setRoom(m => room)
     });
   }, []);

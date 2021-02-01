@@ -5,7 +5,7 @@ import './Message.css';
 import ReactEmoji from 'react-emoji';
 
 const Message = ({ message: { text, username }, name }) => {
-  console.log(name)
+
   let isSentByCurrentUser = false;
 
   const trimmedName = name.trim().toLowerCase();

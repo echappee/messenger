@@ -3,11 +3,14 @@
 const users = [];
 // 3 params: id/name/room
 const addUser = ({ id, name, room }) => {
-  name = name.trim().toLowerCase(); //Laure Malherbe => lauremalherbe
+  name = name.trim().toLowerCase(); 
   room = room.trim().toLowerCase();
 
   //check if there is already an existing user
   const existingUser = users.find((user) => user.room === room && user.name === name);
+  console.log(name)
+  console.log(room)
+
 
   if (!name || !room) return { error: 'Username and room are required.' };
   if (existingUser) return { error: 'Username is taken.' };
